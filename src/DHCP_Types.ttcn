@@ -1,0 +1,201 @@
+/******************************************************************************
+* Copyright (c) 2005, 2014  Ericsson AB
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Jozsef Gyurusi - initial implementation and initial documentation
+*   Attila Balasko
+*   Gabor Bettesch
+*   Gabor Szalai
+*   Kulcsár Endre
+*   Sandor Palugyai
+******************************************************************************/
+//
+//  File:		DHCP_Types.ttcn
+//  Description:	Definition of DHCP protocol, RFC 2131
+//  Rev:		R6A
+//  Prodnr:             CNL 113 461
+module DHCP_Types
+{
+ external function enc_PDU_DHCP(in PDU_DHCP pdu) return octetstring;
+ external function dec_PDU_DHCP(in octetstring stream) return PDU_DHCP;
+ external function dec_PDU_DHCP_Opt82(in octetstring stream, in DHCP_Option82_Format format) return PDU_DHCP;
+
+
+import from General_Types all; 
+
+import from DHCP_Options all;
+
+type enumerated DHCP_Option82_Format
+{
+  DHCP_String_Format(0),
+  DHCP_Cisco_Format(1),
+  DHCP_Customer_Number_Format(2),
+  DHCP_EDA_Configuration_Format(3)
+}
+
+type charstring DHCP_SNAME_STRING length (0..64) with {
+  variant "FIELDLENGTH(64)" 
+};
+type charstring DHCP_FILE_STRING length (0..128) with {
+  variant "FIELDLENGTH(128)" 
+};
+
+// DHCP option:
+type record DHCP_PADDING_OPTION {
+  DHCP_Option_Type code (DHCP_PADDING_OPTION_TYPE)
+} with {
+  variant "PRESENCE (code = DHCP_PADDING_OPTION_TYPE)"
+};
+
+type record DHCP_END_OPTION {
+  DHCP_Option_Type code (DHCP_END_OPTION_TYPE)
+} with {
+  variant "PRESENCE (code = DHCP_END_OPTION_TYPE)"
+};
+
+type record DHCP_GENERAL_OPTION {
+  OCT1 code,
+  LIN1 len,
+  octetstring data
+} with {
+  variant (len) "LENGTHTO(data)"
+};
+
+type union DHCP_OPTION {
+  DHCP_PADDING_OPTION padding,
+  DHCP_END_OPTION end,
+  DHCP_Message_Type_OPTION message_type,
+  DHCP_Client_Identifier_OPTION client_identifier,
+  DHCP_Requested_IP_Address_OPTION requested_IP_address,
+  DHCP_Host_Name_OPTION host_name,
+  DHCP_Vendor_class_identifier_OPTION vendor_class_identifier,
+  DHCP_Parameter_request_list_OPTION parameter_request_list,
+  DHCP_User_Class_Information_OPTION user_class_information,
+  DHCP_Server_Identifier_OPTION server_identifier,
+  DHCP_IP_Address_Lease_Time_OPTION IP_address_lease_time,
+  DHCP_Subnet_Mask_OPTION subnet_mask,
+  DHCP_Domain_Name_OPTION domain_name,
+  DHCP_Router_OPTION router,
+  DHCP_Domain_Name_Server_OPTION domain_name_server,
+  DHCP_NetBIOS_over_TCP_IP_Name_Server_OPTION netBIOS_over_TCP_IP_name_server,
+  DHCP_NetBIOS_over_TCP_IP_Node_Type_OPTION netBIOS_over_TCP_IP_node_type,
+  DHCP_NetBIOS_over_TCP_IP_Scope_OPTION netBIOS_over_TCP_IP_scope,
+  DHCP_Perform_Router_Discovery_OPTION perform_router_discovery,
+  DHCP_Static_Route_OPTION static_route,
+  DHCP_Vendor_Specific_Information_OPTION vendor_specific_information,
+  DHCP_Maximum_DHCP_Message_Size_OPTION maximum_DHCP_message_size,
+
+  DHCP_Time_Offset_OPTION time_Offset,
+  DHCP_Time_Server_OPTION time_Server,
+  DHCP_Name_Server_OPTION name_Server,
+  DHCP_Log_Server_OPTION log_Server,
+  DHCP_Cookie_Server_OPTION cookie_Server,
+  DHCP_LPR_Server_OPTION lPR_Server,
+  DHCP_Impress_Server_OPTION impress_Server,
+  DHCP_Resource_Location_Server_OPTION resource_Location_Server,
+  DHCP_Boot_File_Size_OPTION boot_File_Size,
+  DHCP_Merit_Dump_File_OPTION merit_Dump_File,
+  DHCP_Swap_Server_OPTION swap_Server,
+  DHCP_Root_Path_OPTION root_Path,
+  DHCP_Extension_Path_OPTION extension_Path,
+  DHCP_IP_Forwarding_Enable_Disable_OPTION iP_Forwarding_Enable_Disable,
+  DHCP_Non_Local_Source_Routing_Enable_Disable_OPTION non_Local_Source_Routing_Enable_Disable,
+  DHCP_Policy_Filter_OPTION policy_Filter,
+  DHCP_Maximum_Datagram_Reassembly_Size_OPTION maximum_Datagram_Reassembly_Size,
+  DHCP_Default_IP_Time_To_Live_OPTION default_IP_Time_To_Live,
+  DHCP_Path_MTU_Aging_Timeout_OPTION path_MTU_Aging_Timeout,
+  DHCP_Path_MTU_Plateau_Table_OPTION path_MTU_Plateau_Table,
+  DHCP_Interface_MTU_OPTION interface_MTU,
+  DHCP_All_Subnets_Are_Local_OPTION all_Subnets_Are_Local,
+  DHCP_Broadcast_Address_OPTION broadcast_Address,
+  DHCP_Perform_Mask_Discovery_OPTION perform_Mask_Discovery,
+  DHCP_Mask_Supplier_OPTION mask_Supplier,
+  DHCP_Router_Solicitation_Address_OPTION router_Solicitation_Address,
+  DHCP_Trailer_Encapsulation_OPTION trailer_Encapsulation,
+  DHCP_ARP_Cache_Timeout_OPTION aRP_Cache_Timeout,
+  DHCP_Ethernet_Encapsulation_OPTION ethernet_Encapsulation,
+  DHCP_TCP_Default_TTL_OPTION tCP_Default_TTL,
+  DHCP_TCP_Keepalive_Interval_OPTION tCP_Keepalive_Interval,
+  DHCP_TCP_Keepalive_Garbage_OPTION tCP_Keepalive_Garbage,
+  DHCP_Network_Information_Service_Domain_OPTION network_Information_Service_Domain,
+  DHCP_Network_Information_Servers_OPTION network_Information_Servers,
+  DHCP_Network_Time_Protocol_Servers_OPTION network_Time_Protocol_Servers,
+  DHCP_NetBIOS_Over_TCP_IP_Datagram_Distribution_OPTION netBIOS_Over_TCP_IP_Datagram_Distribution,
+  DHCP_X_Window_System_Font_Server_OPTION x_Window_System_Font_Server,
+  DHCP_X_Window_System_Display_Manager_OPTION x_Window_System_Display_Manager,
+  DHCP_Network_Information_Service_and_Domain_OPTION network_Information_Service_and_Domain,
+  DHCP_Network_Information_Service_and_Servers_OPTION network_Information_Service_and_Servers,
+  DHCP_Mobile_IP_Home_Agent_OPTION mobile_IP_Home_Agent,
+  DHCP_Simple_Mail_Transport_Protocol_OPTION simple_Mail_Transport_Protocol,
+  DHCP_Post_Office_Protocol_OPTION post_Office_Protocol,
+  DHCP_Network_News_Transport_Protocol_OPTION network_News_Transport_Protocol,
+  DHCP_Default_World_Wide_Web_OPTION default_World_Wide_Web,
+  DHCP_Default_Finger_Service_OPTION default_Finger_Service,
+  DHCP_Default_Internet_Relay_Chat_OPTION default_Internet_Relay_Chat,
+  DHCP_Street_Talk_Server_OPTION street_Talk_Server,
+  DHCP_Street_Talk_Directory_Assistance_Server_OPTION street_Talk_Directory_Assistance_Server,
+  DHCP_Option_Overload_OPTION option_Overload,
+  DHCP_TFTP_Server_Name_OPTION tFTP_Server_Name,
+  DHCP_Bootfile_Name_OPTION bootfile_Name,
+  DHCP_Message_OPTION dhcp_message,
+  DHCP_Renewal_Time_Value_OPTION renewal_Time_Value,
+  DHCP_Rebinding_Time_Value_OPTION rebinding_Time_Value,
+  DHCP_Relay_Agent_Information_OPTION relay_agent_information,
+  DHCP_Classless_Route_OPTION classless_route,
+  DHCP_Subnet_Selection_OPTION subnet_selection,
+
+  DHCP_GENERAL_OPTION general
+}
+
+type record of DHCP_OPTION DHCP_OPTIONS;
+
+type union DHCP_SNAME {
+  DHCP_SNAME_STRING sname,
+  DHCP_OPTIONS options
+}
+
+type union DHCP_FILE {
+  DHCP_FILE_STRING file,
+  DHCP_OPTIONS options
+}
+
+type record DHCP_OPTIONS_FIELD {
+  OCT4 magicCookie ('63825363'O),
+  DHCP_OPTIONS options
+}
+
+
+type record DHCP_MSG {
+  INT1 op,
+  DHCP_HTYPE htype,
+  INT1 hlen,
+  INT1 hops,
+  OCT4 xid,
+  LIN2_BO_LAST secs,
+  OCT2 flags,
+  OCT4 ciaddr,
+  OCT4 yiaddr,
+  OCT4 siaddr,
+  OCT4 giaddr,
+  OCT16 chaddr,
+  DHCP_SNAME sname,
+  DHCP_FILE file,
+  DHCP_OPTIONS_FIELD options optional
+}
+
+// TOP LEVEL PDU:
+type union PDU_DHCP {
+  DHCP_MSG bOOT_REQUEST,
+  DHCP_MSG bOOT_REPLY,
+  octetstring erroneousPDU
+}  with { variant "TAG(
+    bOOT_REQUEST,     op = 1;
+    bOOT_REPLY,       op = 2; 
+    erroneousPDU,  OTHERWISE; )"
+}
+
+}with { encode "RAW"}

@@ -1,0 +1,1040 @@
+/******************************************************************************
+* Copyright (c) 2005, 2014  Ericsson AB
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Jozsef Gyurusi - initial implementation and initial documentation
+*   Attila Balasko
+*   Gabor Bettesch
+*   Gabor Szalai
+*   Kulcsár Endre
+*   Sandor Palugyai
+******************************************************************************/
+//
+//  File:		DHCP_Options.ttcn
+//  Description:	Definition of DHCP protocol options, RFC 2132
+//  Rev:		R6A
+//  Prodnr:             CNL 113 461
+///////////////////////////////////////////////
+module DHCP_Options {
+
+import from General_Types all; 
+
+// 53: DHCP Message Type
+// 61: Client Identifier,
+// 50: Requested IP Address
+// 12: Host Name
+// 60: Vendor class identifier
+// 55: Parameter request list
+// 77: User Class Information
+// 54: Server Identifier
+// 51: IP Address Lease Time
+//  1: Subnet Mask
+// 15: Domain Name
+//  3: Router
+//  6: Domain Name Server
+
+// 44: NetBIOS over TCP/IP Name Server
+// 46: NetBIOS over TCP/IP Node Type
+// 47: NetBIOS over TCP/IP Scope
+// 31: Perform Router Discovery
+// 33: Static Route
+// 43: Vendor Specific Information
+
+// 57: Maximum DHCP Message Size
+
+type enumerated DHCP_Option_Type {
+  DHCP_PADDING_OPTION_TYPE (0),                                   //3.1
+  DHCP_END_OPTION_TYPE (255),                                     //3.2
+  DHCP_Message_Type_OPTION_TYPE (53),                             //9.6
+  DHCP_Client_Identifier_OPTION_TYPE (61),                        //9.14 
+  DHCP_Requested_IP_Address_OPTION_TYPE (50),                     //9.1
+  DHCP_Host_Name_OPTION_TYPE (12),                                //3.14
+  DHCP_Vendor_class_identifier_OPTION_TYPE (60),                  //9.13
+  DHCP_Parameter_request_list_OPTION_TYPE (55),                   //9.8
+  DHCP_User_Class_Information_OPTION_TYPE (77), //   not in RFC 2132: 
+                                                //   found in RFC 3004
+  DHCP_Server_Identifier_OPTION_TYPE (54),                        //9.7
+  DHCP_IP_Address_Lease_Time_OPTION_TYPE (51),                    //9.2
+  DHCP_Subnet_Mask_OPTION_TYPE (1),                               //3.3
+  DHCP_Domain_Name_OPTION_TYPE (15),                              //3.17
+  DHCP_Router_OPTION_TYPE (3),                                    //3.5
+  DHCP_Domain_Name_Server_OPTION_TYPE (6),                        //3.8
+  DHCP_NetBIOS_over_TCP_IP_Name_Server_OPTION_TYPE (44),          //8.5
+  DHCP_NetBIOS_over_TCP_IP_Node_Type_OPTION_TYPE (46),            //8.7
+  DHCP_NetBIOS_over_TCP_IP_Scope_OPTION_TYPE (47),                //8.8
+  DHCP_Perform_Router_Discovery_OPTION_TYPE (31),                 //5.6
+  DHCP_Static_Route_OPTION_TYPE (33),                             //5.8
+  DHCP_Vendor_Specific_Information_OPTION_TYPE (43),              //8.4
+  DHCP_Maximum_DHCP_Message_Size_OPTION_TYPE (57),                //9.10
+  DHCP_Time_Offset_OPTION_TYPE (2),                               //3.4
+  DHCP_Time_Server_OPTION_TYPE (4),                               //3.6
+  DHCP_Name_Server_OPTION_TYPE (5),                               //3.7
+  DHCP_Log_Server_OPTION_TYPE (7),                                //3.9
+  DHCP_Cookie_Server_OPTION_TYPE (8),                             //3.10
+  DHCP_LPR_Server_OPTION_TYPE (9),                                //3.11
+  DHCP_Impress_Server_OPTION_TYPE (10),                           //3.12
+  DHCP_Resource_Location_Server_OPTION_TYPE (11),                 //3.13
+  DHCP_Boot_File_Size_OPTION_TYPE (13),                           //3.15
+  DHCP_Merit_Dump_File_OPTION_TYPE (14),                          //3.16
+  DHCP_Swap_Server_OPTION_TYPE (16),                              //3.18
+  DHCP_Root_Path_OPTION_TYPE (17),                                //3.19
+  DHCP_Extension_Path_OPTION_TYPE (18),                           //3.20
+  DHCP_IP_Forwarding_Enable_Disable_OPTION_TYPE (19),             //4.1
+  DHCP_Non_Local_Source_Routing_Enable_Disable_OPTION_TYPE (20),  //4.2
+  DHCP_Policy_Filter_OPTION_TYPE (21),                            //4.3
+  DHCP_Maximum_Datagram_Reassembly_Size_OPTION_TYPE (22),         //4.4 
+  DHCP_Default_IP_Time_To_Live_OPTION_TYPE (23),                  //4.5 
+  DHCP_Path_MTU_Aging_Timeout_OPTION_TYPE (24),                   //4.6
+  DHCP_Path_MTU_Plateau_Table_OPTION_TYPE (25),                   //4.7
+  DHCP_Interface_MTU_OPTION_TYPE (26),                            //5.1
+  DHCP_All_Subnets_Are_Local_OPTION_TYPE (27),                    //5.2
+  DHCP_Broadcast_Address_OPTION_TYPE (28),                        //5.3
+  DHCP_Perform_Mask_Discovery_OPTION_TYPE (29),                   //5.4
+  DHCP_Mask_Supplier_OPTION_TYPE (30),                            //5.5
+  DHCP_Router_Solicitation_Address_OPTION_TYPE (32),              //5.7
+  DHCP_Trailer_Encapsulation_OPTION_TYPE (34),                    //6.1
+  DHCP_ARP_Cache_Timeout_OPTION_TYPE (35),                        //6.2
+  DHCP_Ethernet_Encapsulation_OPTION_TYPE (36),                   //6.3
+  DHCP_TCP_Default_TTL_OPTION_TYPE (37),                          //7.1
+  DHCP_TCP_Keepalive_Interval_OPTION_TYPE (38),                   //7.2
+  DHCP_TCP_Keepalive_Garbage_OPTION_TYPE (39),                    //7.3
+  DHCP_Network_Information_Service_Domain_OPTION_TYPE (40),       //8.1
+  DHCP_Network_Information_Servers_OPTION_TYPE (41),              //8.2
+  DHCP_Network_Time_Protocol_Servers_OPTION_TYPE (42),            //8.3
+  DHCP_NetBIOS_Over_TCP_IP_Datagram_Distribution_OPTION_TYPE (45),//8.6
+  DHCP_X_Window_System_Font_Server_OPTION_TYPE (48),              //8.9
+  DHCP_X_Window_System_Display_Manager_OPTION_TYPE (49),          //8.10
+  DHCP_Network_Information_Service_and_Domain_OPTION_TYPE (64),   //8.11
+  DHCP_Network_Information_Service_and_Servers_OPTION_TYPE (65),  //8.12
+  DHCP_Mobile_IP_Home_Agent_OPTION_TYPE (68),                     //8.13
+  DHCP_Simple_Mail_Transport_Protocol_OPTION_TYPE (69),           //8.14
+  DHCP_Post_Office_Protocol_OPTION_TYPE (70),                     //8.15
+  DHCP_Network_News_Transport_Protocol_OPTION_TYPE (71),          //8.16
+  DHCP_Default_World_Wide_Web_OPTION_TYPE (72),                   //8.17
+  DHCP_Default_Finger_Service_OPTION_TYPE (73),                   //8.18
+  DHCP_Default_Internet_Relay_Chat_OPTION_TYPE (74),              //8.19
+  DHCP_Street_Talk_Server_OPTION_TYPE (75),                       //8.20
+  DHCP_Street_Talk_Directory_Assistance_Server_OPTION_TYPE (76),  //8.21
+  DHCP_Option_Overload_OPTION_TYPE (52),                          //9.3
+  DHCP_TFTP_Server_Name_OPTION_TYPE (66),                         //9.4
+  DHCP_Bootfile_Name_OPTION_TYPE (67),                            //9.5
+  DHCP_Message_OPTION_TYPE (56),                                  //9.9
+  DHCP_Renewal_Time_Value_OPTION_TYPE (58),                       //9.11
+  DHCP_Rebinding_Time_Value_OPTION_TYPE (59),                     //9.12
+  DHCP_Relay_Agent_Information_OPTION_TYPE(82),                   //RFC3046
+  DHCP_Classless_Route_OPTION_TYPE(121),                          //RFC3442
+  DHCP_Subnet_Selection_OPTION_TYPE(118)                          //RFC3011
+} with {
+  variant "FIELDLENGTH(8)"
+}
+
+type enumerated DHCP_Message_Types {
+  DHCP_Discover (1),
+  DHCP_Offer    (2),
+  DHCP_Request  (3),
+  DHCP_Decline  (4),
+  DHCP_Ack      (5),
+  DHCP_Nak      (6),
+  DHCP_Release  (7),
+  DHCP_Inform   (8)
+} with {
+  variant "FIELDLENGTH(8)"
+}
+
+type record DHCP_Message_Type_OPTION {
+  DHCP_Option_Type code (DHCP_Message_Type_OPTION_TYPE),
+  LIN1 len,
+  DHCP_Message_Types val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Message_Type_OPTION_TYPE)"
+};
+
+// RFC 1700:
+/*
+Number Hardware Type (hrd)                           References
+------ -----------------------------------           ----------
+     1 Ethernet (10Mb)                                    [JBP]
+     2 Experimental Ethernet (3Mb)                        [JBP]
+     3 Amateur Radio AX.25                                [PXK]
+     4 Proteon ProNET Token Ring                          [JBP]
+     5 Chaos                                              [GXP]
+     6 IEEE 802 Networks                                  [JBP]
+     7 ARCNET                                             [JBP]
+     8 Hyperchannel                                       [JBP]
+     9 Lanstar                                             [TU]
+
+    10 Autonet Short Address                             [MXB1]
+    11 LocalTalk                                         [JKR1]
+    12 LocalNet (IBM PCNet or SYTEK LocalNET)             [JXM]
+    13 Ultra link                                        [RXD2]
+    14 SMDS                                              [GXC1]
+    15 Frame Relay                                        [AGM]
+    16 Asynchronous Transmission Mode (ATM)              [JXB2]
+    17 HDLC                                               [JBP]
+    18 Fibre Channel                            [Yakov Rekhter]
+    19 Asynchronous Transmission Mode (ATM)      [Mark Laubach]
+    20 Serial Line                                        [JBP]
+    21 Asynchronous Transmission Mode (ATM)              [MXB1]
+*/
+type enumerated DHCP_HTYPE {
+    DHCP_HTYPE_Ethernet_10Mb                       (1),
+    DHCP_HTYPE_Experimental_Ethernet_3Mb           (2),
+    DHCP_HTYPE_Amateur_Radio_AX_25                 (3),
+    DHCP_HTYPE_Proteon_ProNET_Token_Ring           (4),
+    DHCP_HTYPE_Chaos                               (5),
+    DHCP_HTYPE_IEEE_802_Networks                   (6),
+    DHCP_HTYPE_ARCNET                              (7),
+    DHCP_HTYPE_Hyperchannel                        (8),
+    DHCP_HTYPE_Lanstar                             (9),
+
+    DHCP_HTYPE_Autonet_Short_Address                (10),
+    DHCP_HTYPE_LocalTalk                            (11),
+    DHCP_HTYPE_LocalNet_IBM_PCNet_or_SYTEK_LocalNET (12),
+    DHCP_HTYPE_Ultra_link                           (13),
+    DHCP_HTYPE_SMDS                                 (14),
+    DHCP_HTYPE_Frame_Relay                          (15),
+    DHCP_HTYPE_Asynchronous_Transmission_Mode_ATM_16(16),
+    DHCP_HTYPE_HDLC                                 (17),
+    DHCP_HTYPE_Fibre_Channel                        (18),
+    DHCP_HTYPE_Asynchronous_Transmission_Mode_ATM_19(19),
+    DHCP_HTYPE_Serial_Line                          (20),
+    DHCP_HTYPE_Asynchronous_Transmission_Mode_ATM_21(21)
+} with {
+  variant "FIELDLENGTH(8)"
+}
+
+type record DHCP_Client_Identifier_HTYPE {
+  DHCP_HTYPE htype,
+  OCTN client_identifier
+}
+
+type union DHCP_Client_Identifier {
+  DHCP_Client_Identifier_HTYPE client_identifier_HTYPE,
+  OCTN client_identifier_OCTN
+}
+
+type record DHCP_Client_Identifier_OPTION {
+  DHCP_Option_Type code (DHCP_Client_Identifier_OPTION_TYPE),
+  LIN1 len,
+  DHCP_Client_Identifier val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Client_Identifier_OPTION_TYPE)"
+};
+
+type record DHCP_Requested_IP_Address_OPTION {
+  DHCP_Option_Type code (DHCP_Requested_IP_Address_OPTION_TYPE),
+  LIN1 len,
+  OCT4 val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Requested_IP_Address_OPTION_TYPE)"
+};
+
+type record DHCP_Subnet_Selection_OPTION {
+  DHCP_Option_Type code (DHCP_Subnet_Selection_OPTION_TYPE),
+  LIN1 len,
+  OCT4 val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Subnet_Selection_OPTION_TYPE)"
+};
+
+type record DHCP_Host_Name_OPTION {
+  DHCP_Option_Type code (DHCP_Host_Name_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity) 
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Host_Name_OPTION_TYPE)"
+};
+
+type record DHCP_Vendor_class_identifier_OPTION {
+  DHCP_Option_Type code (DHCP_Vendor_class_identifier_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity) 
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Vendor_class_identifier_OPTION_TYPE)"
+};
+
+//type record of OCT1 DHCP_Parameter_Request_List;
+type record of DHCP_Option_Type DHCP_Parameter_Request_List;
+
+type record DHCP_Parameter_request_list_OPTION {
+  DHCP_Option_Type code (DHCP_Parameter_request_list_OPTION_TYPE),
+  LIN1 len,
+  DHCP_Parameter_Request_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Parameter_request_list_OPTION_TYPE)"
+};
+
+type record DHCP_User_Class_Data {
+  LIN1 len,
+  octetstring data
+} with {
+  variant (len) "LENGTHTO(data)"
+}
+
+type record of DHCP_User_Class_Data DHCP_User_Class_Data_List;
+
+type record DHCP_User_Class_Information_OPTION {
+  DHCP_Option_Type code (DHCP_User_Class_Information_OPTION_TYPE),
+  LIN1 len,
+  DHCP_User_Class_Data_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_User_Class_Information_OPTION_TYPE)"
+};
+
+type record DHCP_Server_Identifier_OPTION {
+  DHCP_Option_Type code (DHCP_Server_Identifier_OPTION_TYPE),
+  LIN1 len,
+  OCT4 val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Server_Identifier_OPTION_TYPE)"
+};
+
+type record DHCP_IP_Address_Lease_Time_OPTION {
+  DHCP_Option_Type code (DHCP_IP_Address_Lease_Time_OPTION_TYPE),
+  LIN1 len,
+  LIN4_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_IP_Address_Lease_Time_OPTION_TYPE)"
+};
+
+type record DHCP_Subnet_Mask_OPTION {
+  DHCP_Option_Type code (DHCP_Subnet_Mask_OPTION_TYPE),
+  LIN1 len,
+  OCT4 val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Subnet_Mask_OPTION_TYPE)"
+};
+
+type record DHCP_Domain_Name_OPTION {
+  DHCP_Option_Type code (DHCP_Domain_Name_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity) 
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Domain_Name_OPTION_TYPE)"
+};
+
+type record of OCT4 DHCP_IP_Addr_List;
+
+type record DHCP_Router_OPTION {
+  DHCP_Option_Type code (DHCP_Router_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Router_OPTION_TYPE)"
+};
+
+type record DHCP_Domain_Name_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Domain_Name_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Domain_Name_Server_OPTION_TYPE)"
+};
+
+type record DHCP_NetBIOS_over_TCP_IP_Name_Server_OPTION {
+  DHCP_Option_Type code (DHCP_NetBIOS_over_TCP_IP_Name_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_NetBIOS_over_TCP_IP_Name_Server_OPTION_TYPE)"
+};
+
+type enumerated DHCP_NetBIOS_Node_Type {
+  B_Node(1),
+  P_Node(2),
+  M_Node(4),
+  H_Node(8)
+} with {
+  variant "FIELDLENGTH(8)"
+}
+
+type record DHCP_NetBIOS_over_TCP_IP_Node_Type_OPTION {
+  DHCP_Option_Type code (DHCP_NetBIOS_over_TCP_IP_Node_Type_OPTION_TYPE),
+  LIN1 len,
+  DHCP_NetBIOS_Node_Type val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_NetBIOS_over_TCP_IP_Node_Type_OPTION_TYPE)"
+};
+
+type record DHCP_NetBIOS_over_TCP_IP_Scope_OPTION {
+  DHCP_Option_Type code (DHCP_NetBIOS_over_TCP_IP_Scope_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity) 
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_NetBIOS_over_TCP_IP_Scope_OPTION_TYPE)"
+};
+
+type enumerated DHCP_YES_or_NO {
+  DHCP_NO (0),
+  DHCP_YES (1)
+} with {
+  variant "FIELDLENGTH(8)"
+}
+
+type record DHCP_Perform_Router_Discovery_OPTION {
+  DHCP_Option_Type code (DHCP_Perform_Router_Discovery_OPTION_TYPE),
+  LIN1 len,
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Perform_Router_Discovery_OPTION_TYPE)"
+};
+
+type record DHCP_Route {
+  OCT4 destination,
+  OCT4 router
+}
+
+type record of DHCP_Route DHCP_Route_List;
+
+type record DHCP_Static_Route_OPTION {
+  DHCP_Option_Type code (DHCP_Static_Route_OPTION_TYPE),
+  LIN1 len,
+  DHCP_Route_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Static_Route_OPTION_TYPE)"
+};
+
+type record DHCP_Vendor_Specific_Information_OPTION {
+  DHCP_Option_Type code (DHCP_Vendor_Specific_Information_OPTION_TYPE),
+  LIN1 len,
+  OCTN val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Vendor_Specific_Information_OPTION_TYPE)"
+};
+
+type record DHCP_Maximum_DHCP_Message_Size_OPTION {
+  DHCP_Option_Type code (DHCP_Maximum_DHCP_Message_Size_OPTION_TYPE),
+  LIN1 len,
+  LIN2_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Maximum_DHCP_Message_Size_OPTION_TYPE)"
+};
+ 
+type record DHCP_Time_Offset_OPTION {
+  DHCP_Option_Type code (DHCP_Time_Offset_OPTION_TYPE),
+  LIN1 len,
+  integer val (-2147483648..2147483647)
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Time_Offset_OPTION_TYPE)"
+  variant (val) "FIELDLENGTH(32), COMP(2scompl), BYTEORDER(last)"
+};
+
+type record DHCP_Time_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Time_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Time_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Name_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Name_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Name_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Log_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Log_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Log_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Cookie_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Cookie_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Cookie_Server_OPTION_TYPE)"
+};
+
+type record DHCP_LPR_Server_OPTION {
+  DHCP_Option_Type code (DHCP_LPR_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_LPR_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Impress_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Impress_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Impress_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Resource_Location_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Resource_Location_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Resource_Location_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Boot_File_Size_OPTION {
+  DHCP_Option_Type code (DHCP_Boot_File_Size_OPTION_TYPE),
+  LIN1 len,
+  LIN2_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Boot_File_Size_OPTION_TYPE)"  
+};  
+  
+type record DHCP_Merit_Dump_File_OPTION {
+  DHCP_Option_Type code (DHCP_Merit_Dump_File_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity)  //NVT ASCII
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Merit_Dump_File_OPTION_TYPE)"
+};
+
+type record DHCP_Swap_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Swap_Server_OPTION_TYPE),
+  LIN1 len,
+  OCT4 val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Swap_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Root_Path_OPTION {
+  DHCP_Option_Type code (DHCP_Root_Path_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity)  //NVT ASCII
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Root_Path_OPTION_TYPE)"
+};
+
+type record DHCP_Extension_Path_OPTION {
+  DHCP_Option_Type code (DHCP_Extension_Path_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity)
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Extension_Path_OPTION_TYPE)"
+}; 
+
+type record DHCP_IP_Forwarding_Enable_Disable_OPTION {
+  DHCP_Option_Type code (DHCP_IP_Forwarding_Enable_Disable_OPTION_TYPE),
+  LIN1 len,
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_IP_Forwarding_Enable_Disable_OPTION_TYPE)"
+}; 
+
+type record  DHCP_Non_Local_Source_Routing_Enable_Disable_OPTION {
+  DHCP_Option_Type code
+               (DHCP_Non_Local_Source_Routing_Enable_Disable_OPTION_TYPE),
+  LIN1 len,
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_Non_Local_Source_Routing_Enable_Disable_OPTION_TYPE)"
+};
+
+type record length (1..infinity) of DHCP_Policy_Filter DHCP_Policy_Filter_List;
+
+type record DHCP_Policy_Filter {
+  OCT4 iP_Address,
+  OCT4 mask
+}
+
+type record DHCP_Policy_Filter_OPTION {
+  DHCP_Option_Type code (DHCP_Policy_Filter_OPTION_TYPE),
+  LIN1 len,
+  DHCP_Policy_Filter_List val 
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Policy_Filter_OPTION_TYPE)"
+}; 
+
+type record DHCP_Maximum_Datagram_Reassembly_Size_OPTION {
+  DHCP_Option_Type code (DHCP_Maximum_Datagram_Reassembly_Size_OPTION_TYPE), 
+  LIN1 len,
+  LIN2_BO_LAST val    
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Maximum_Datagram_Reassembly_Size_OPTION_TYPE)" 
+}; 
+
+type record DHCP_Default_IP_Time_To_Live_OPTION {
+  DHCP_Option_Type code (DHCP_Default_IP_Time_To_Live_OPTION_TYPE),
+  LIN1 len,
+  integer val (1..255) 
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Default_IP_Time_To_Live_OPTION_TYPE)"
+  variant (val) "FIELDLENGTH(8)"
+}; 
+
+type record DHCP_Path_MTU_Aging_Timeout_OPTION {
+  DHCP_Option_Type code (DHCP_Path_MTU_Aging_Timeout_OPTION_TYPE),
+  LIN1 len, 
+  LIN4_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Path_MTU_Aging_Timeout_OPTION_TYPE)"
+}; 
+
+type LIN2_BO_LAST DHCP_MTU_Size;
+
+type record length (1..infinity) of DHCP_MTU_Size DHCP_MTU_Size_List;
+
+type record DHCP_Path_MTU_Plateau_Table_OPTION { 
+  DHCP_Option_Type code (DHCP_Path_MTU_Plateau_Table_OPTION_TYPE),
+  LIN1 len, 
+  DHCP_MTU_Size_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Path_MTU_Plateau_Table_OPTION_TYPE)"
+}; 
+
+type record DHCP_Interface_MTU_OPTION {
+  DHCP_Option_Type code (DHCP_Interface_MTU_OPTION_TYPE),
+  LIN1 len, 
+  LIN2_BO_LAST val    // min val = 68
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Interface_MTU_OPTION_TYPE)"  
+}; 
+
+type record DHCP_All_Subnets_Are_Local_OPTION {
+  DHCP_Option_Type code (DHCP_All_Subnets_Are_Local_OPTION_TYPE),
+  LIN1 len, 
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_All_Subnets_Are_Local_OPTION_TYPE)"
+}; 
+
+type record DHCP_Broadcast_Address_OPTION {
+  DHCP_Option_Type code (DHCP_Broadcast_Address_OPTION_TYPE),
+  LIN1 len, 
+  OCT4 val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Broadcast_Address_OPTION_TYPE)"
+};
+
+type record DHCP_Perform_Mask_Discovery_OPTION {
+  DHCP_Option_Type code (DHCP_Perform_Mask_Discovery_OPTION_TYPE),
+  LIN1 len, 
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Perform_Mask_Discovery_OPTION_TYPE)"
+};
+
+type record DHCP_Mask_Supplier_OPTION {
+  DHCP_Option_Type code (DHCP_Mask_Supplier_OPTION_TYPE),
+  LIN1 len, 
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Mask_Supplier_OPTION_TYPE)"
+};
+
+type record DHCP_Router_Solicitation_Address_OPTION {
+  DHCP_Option_Type code (DHCP_Router_Solicitation_Address_OPTION_TYPE),
+  LIN1 len,
+  OCT4 val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Router_Solicitation_Address_OPTION_TYPE)"
+};
+
+type record DHCP_Trailer_Encapsulation_OPTION {
+  DHCP_Option_Type code (DHCP_Trailer_Encapsulation_OPTION_TYPE),
+  LIN1 len,
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Trailer_Encapsulation_OPTION_TYPE)"
+};
+
+type record DHCP_ARP_Cache_Timeout_OPTION {
+  DHCP_Option_Type code (DHCP_ARP_Cache_Timeout_OPTION_TYPE),
+  LIN1 len,
+  LIN4_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_ARP_Cache_Timeout_OPTION_TYPE)"
+};
+  
+type record DHCP_Ethernet_Encapsulation_OPTION {  
+  DHCP_Option_Type code (DHCP_Ethernet_Encapsulation_OPTION_TYPE), 
+  LIN1 len,
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Ethernet_Encapsulation_OPTION_TYPE)"
+};
+
+type record DHCP_TCP_Default_TTL_OPTION {
+  DHCP_Option_Type code (DHCP_TCP_Default_TTL_OPTION_TYPE),
+  LIN1 len,
+  integer val (1..255)
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_TCP_Default_TTL_OPTION_TYPE)"
+  variant (val) "FIELDLENGTH(8)"
+};
+
+type record DHCP_TCP_Keepalive_Interval_OPTION {
+  DHCP_Option_Type code (DHCP_TCP_Keepalive_Interval_OPTION_TYPE),
+  LIN1 len,
+  LIN4_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_TCP_Keepalive_Interval_OPTION_TYPE)"
+};
+
+type record DHCP_TCP_Keepalive_Garbage_OPTION {
+  DHCP_Option_Type code (DHCP_TCP_Keepalive_Garbage_OPTION_TYPE),
+  LIN1 len,
+  DHCP_YES_or_NO val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_TCP_Keepalive_Garbage_OPTION_TYPE)"
+};
+
+type record DHCP_Network_Information_Service_Domain_OPTION {
+  DHCP_Option_Type code (DHCP_Network_Information_Service_Domain_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity)  //NVT ASCII
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code =DHCP_Network_Information_Service_Domain_OPTION_TYPE)"
+};
+
+type record DHCP_Network_Information_Servers_OPTION {
+  DHCP_Option_Type code (DHCP_Network_Information_Servers_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Network_Information_Servers_OPTION_TYPE)"
+};
+
+type record DHCP_Network_Time_Protocol_Servers_OPTION {
+  DHCP_Option_Type code (DHCP_Network_Time_Protocol_Servers_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Network_Time_Protocol_Servers_OPTION_TYPE)"
+};
+
+type record DHCP_NetBIOS_Over_TCP_IP_Datagram_Distribution_OPTION {
+  DHCP_Option_Type code 
+          (DHCP_NetBIOS_Over_TCP_IP_Datagram_Distribution_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_NetBIOS_Over_TCP_IP_Datagram_Distribution_OPTION_TYPE)"
+};
+
+type record DHCP_X_Window_System_Font_Server_OPTION {
+  DHCP_Option_Type code (DHCP_X_Window_System_Font_Server_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_X_Window_System_Font_Server_OPTION_TYPE)"
+};
+
+type record DHCP_X_Window_System_Display_Manager_OPTION {
+  DHCP_Option_Type code (DHCP_X_Window_System_Display_Manager_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_X_Window_System_Display_Manager_OPTION_TYPE)"
+};
+
+type record DHCP_Network_Information_Service_and_Domain_OPTION {
+  DHCP_Option_Type code  
+            (DHCP_Network_Information_Service_and_Domain_OPTION_TYPE), 
+  LIN1 len,
+  charstring val length (1..infinity)  //NVT ASCII
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_Network_Information_Service_and_Domain_OPTION_TYPE)"
+};
+
+type record DHCP_Network_Information_Service_and_Servers_OPTION {
+  DHCP_Option_Type code 
+                  (DHCP_Network_Information_Service_and_Servers_OPTION_TYPE),   
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_Network_Information_Service_and_Servers_OPTION_TYPE)"
+};
+
+type record DHCP_Mobile_IP_Home_Agent_OPTION {
+  DHCP_Option_Type code (DHCP_Mobile_IP_Home_Agent_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_Mobile_IP_Home_Agent_OPTION_TYPE)"
+};
+
+type record DHCP_Simple_Mail_Transport_Protocol_OPTION {
+  DHCP_Option_Type code (DHCP_Simple_Mail_Transport_Protocol_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Simple_Mail_Transport_Protocol_OPTION_TYPE)"
+};
+
+type record DHCP_Post_Office_Protocol_OPTION {
+  DHCP_Option_Type code (DHCP_Post_Office_Protocol_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Post_Office_Protocol_OPTION_TYPE)"
+};
+
+type record DHCP_Network_News_Transport_Protocol_OPTION {
+  DHCP_Option_Type code (DHCP_Network_News_Transport_Protocol_OPTION_TYPE), 
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Network_News_Transport_Protocol_OPTION_TYPE)"
+};
+
+type record DHCP_Default_World_Wide_Web_OPTION {
+  DHCP_Option_Type code (DHCP_Default_World_Wide_Web_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Default_World_Wide_Web_OPTION_TYPE)"
+};
+
+type record DHCP_Default_Finger_Service_OPTION {
+  DHCP_Option_Type code (DHCP_Default_Finger_Service_OPTION_TYPE),
+  LIN1 len,
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Default_Finger_Service_OPTION_TYPE)"
+};
+
+type record DHCP_Default_Internet_Relay_Chat_OPTION {
+  DHCP_Option_Type code (DHCP_Default_Internet_Relay_Chat_OPTION_TYPE),
+  LIN1 len, 
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Default_Internet_Relay_Chat_OPTION_TYPE)"
+};
+
+type record DHCP_Street_Talk_Server_OPTION {
+  DHCP_Option_Type code (DHCP_Street_Talk_Server_OPTION_TYPE),
+  LIN1 len, 
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Street_Talk_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Street_Talk_Directory_Assistance_Server_OPTION {
+  DHCP_Option_Type code 
+           (DHCP_Street_Talk_Directory_Assistance_Server_OPTION_TYPE),  
+  LIN1 len, 
+  DHCP_IP_Addr_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+        (code = DHCP_Street_Talk_Directory_Assistance_Server_OPTION_TYPE)"
+};
+
+type record DHCP_Option_Overload_OPTION {
+  DHCP_Option_Type code (DHCP_Option_Overload_OPTION_TYPE),
+  LIN1 len, 
+  INT1 val (1..3)
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+        (code = DHCP_Option_Overload_OPTION_TYPE)"
+};
+
+type record DHCP_TFTP_Server_Name_OPTION {
+  DHCP_Option_Type code (DHCP_TFTP_Server_Name_OPTION_TYPE),
+  LIN1 len,  
+  charstring val length (1..infinity)  
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_TFTP_Server_Name_OPTION_TYPE)"
+};
+
+type record DHCP_Bootfile_Name_OPTION {
+  DHCP_Option_Type code (DHCP_Bootfile_Name_OPTION_TYPE),
+  LIN1 len,    
+  charstring val length (1..infinity)  
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE 
+           (code = DHCP_Bootfile_Name_OPTION_TYPE)"
+};
+
+type record DHCP_Message_OPTION {
+  DHCP_Option_Type code (DHCP_Message_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..infinity)  //NVT ASCII
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Message_OPTION_TYPE)"
+};
+
+type record DHCP_Renewal_Time_Value_OPTION {
+  DHCP_Option_Type code (DHCP_Renewal_Time_Value_OPTION_TYPE),
+  LIN1 len,
+  LIN4_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Renewal_Time_Value_OPTION_TYPE)"
+};
+
+type record DHCP_Rebinding_Time_Value_OPTION {
+  DHCP_Option_Type code (DHCP_Rebinding_Time_Value_OPTION_TYPE),
+  LIN1 len,
+  LIN4_BO_LAST val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Rebinding_Time_Value_OPTION_TYPE)"
+}; 
+
+type record DHCP_Relay_Agent_Id_Cisco
+{
+  LIN1 type_field,
+  LIN1 version,
+  OCT2 reserved,
+  OCT4 IP_Addr,
+  BIT4 slot,
+  BIT1 module_field,
+  BIT3 port_field,
+  OCT1 VPI,
+  OCT2 VCI
+}
+
+type record DHCP_Relay_Agent_Id_Eda
+{
+  LIN1 version,
+  OCT4 IP_Addr,
+  LIN1 ExtNo,
+  LIN1 PortLevel1,
+  LIN1 PortLevel2,
+  LIN1 Line,
+  OCT1 VPI,
+  OCT2 VCI
+}
+
+type union DHCP_Relay_Agent_Id
+{
+  octetstring               string_format,
+  DHCP_Relay_Agent_Id_Cisco cisco_format,
+  charstring                customer_number_format,
+  DHCP_Relay_Agent_Id_Eda   eda_configuration_format
+}
+
+type record DHCP_Relay_Agent_Suboption
+{
+  LIN1 code,
+  LIN1 id_len,
+  DHCP_Relay_Agent_Id id
+} with {
+  variant (id_len) "LENGTHTO(id)"
+}
+
+type set of DHCP_Relay_Agent_Suboption DHCP_Relay_Agent_Suboption_List;
+
+type record DHCP_Relay_Agent_Information_OPTION {
+  DHCP_Option_Type code (DHCP_Relay_Agent_Information_OPTION_TYPE),
+  LIN1 len,
+  DHCP_Relay_Agent_Suboption_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Relay_Agent_Information_OPTION_TYPE)"
+};
+
+type record DHCP_Classless_Route
+{
+  LIN1 subnet_len,
+  bitstring subnet length (0..32),
+  OCT4 router_IP_Addr
+} with {
+  variant (subnet_len) "LENGTHTO(subnet)"
+  variant (subnet_len) "UNIT(bits)"
+  variant (subnet) "BYTEORDER(last)"
+  variant (router_IP_Addr) "PREPADDING(yes)"
+  variant (subnet,router_IP_Addr) "FIELDORDER(msb)"
+}
+
+type record of DHCP_Classless_Route DHCP_Classless_Route_List;
+
+type record DHCP_Classless_Route_OPTION {
+  DHCP_Option_Type code (DHCP_Classless_Route_OPTION_TYPE),
+  LIN1 len,
+  DHCP_Classless_Route_List val
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Classless_Route_OPTION_TYPE)"
+};
+
+}with{ encode "RAW"}  // end of file
