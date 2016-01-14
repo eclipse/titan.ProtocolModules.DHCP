@@ -16,7 +16,7 @@
 //
 //  File:		DHCP_Types.ttcn
 //  Description:	Definition of DHCP protocol, RFC 2131
-//  Rev:		R6A
+//  Rev:		R6B
 //  Prodnr:             CNL 113 461
 module DHCP_Types
 {

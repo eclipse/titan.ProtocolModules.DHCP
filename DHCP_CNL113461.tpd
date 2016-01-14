@@ -10,7 +10,7 @@
 
    File:               DHCP_CNL113461.tpd
    Description:        tpd project file
-   Rev:                R6A
+   Rev:                R6B
    Prodnr:             CNL 113 461
 
  -->
@@ -20,13 +20,11 @@
     <ReferencedProject name="ProtocolModules_Common" projectLocationURI="../COMMON/ProtocolModules_Common.tpd"/>
   </ReferencedProjects>
   <Folders>
-    <FolderResource projectRelativePath="doc" relativeURI="doc"/>
     <FolderResource projectRelativePath="src" relativeURI="src"/>
   </Folders>
   <Files>
-    <FileResource projectRelativePath="doc/DHCP_CNL113461_FS.pdf" relativeURI="doc/DHCP_CNL113461_FS.pdf"/>
-    <FileResource projectRelativePath="doc/DHCP_CNL113461_PRI.pdf" relativeURI="doc/DHCP_CNL113461_PRI.pdf"/>
-    <FileResource projectRelativePath="doc/DHCP_CNL113461_UG.pdf" relativeURI="doc/DHCP_CNL113461_UG.pdf"/>
+    <FileResource projectRelativePath=".TITAN_properties" relativeURI="../../../workspace2/DHCP_CNL113461/.TITAN_properties"/>
+    <FileResource projectRelativePath=".project" relativeURI="../../../workspace2/DHCP_CNL113461/.project"/>
     <FileResource projectRelativePath="src/DHCP_EncDec.cc" relativeURI="src/DHCP_EncDec.cc"/>
     <FileResource projectRelativePath="src/DHCP_Options.ttcn" relativeURI="src/DHCP_Options.ttcn"/>
     <FileResource projectRelativePath="src/DHCP_Types.ttcn" relativeURI="src/DHCP_Types.ttcn"/>
@@ -40,20 +38,17 @@
           <GNUMake>true</GNUMake>
           <incrementalDependencyRefresh>true</incrementalDependencyRefresh>
           <targetExecutable>bin/DHCP_CNL113461</targetExecutable>
-          <buildLevel>Level 3 - Creating object files with dependency update</buildLevel>
+          <buildLevel>Level3-Creatingobjectfileswithdependencyupdate</buildLevel>
         </MakefileSettings>
         <LocalBuildSettings>
           <workingDirectory>bin</workingDirectory>
         </LocalBuildSettings>
+        <NamingCoventions>
+          <enableProjectSpecificSettings>true</enableProjectSpecificSettings>
+          <externalFunction>.*</externalFunction>
+          <formalParameter>.*</formalParameter>
+        </NamingCoventions>
       </ProjectProperties>
-      <FolderProperties>
-        <FolderResource>
-          <FolderPath>doc</FolderPath>
-          <FolderProperties>
-            <ExcludeFromBuild>true</ExcludeFromBuild>
-          </FolderProperties>
-        </FolderResource>
-      </FolderProperties>
     </Configuration>
   </Configurations>
 </TITAN_Project_File_Information>
