@@ -16,7 +16,7 @@
 //
 //  File:		DHCP_Options.ttcn
 //  Description:	Definition of DHCP protocol options, RFC 2132
-//  Rev:		R6B
+//  Rev:		R6C
 //  Prodnr:             CNL 113 461
 ///////////////////////////////////////////////
 module DHCP_Options {
