@@ -147,11 +147,12 @@ type union DHCP_OPTION {
   DHCP_Relay_Agent_Information_OPTION relay_agent_information,
   DHCP_Classless_Route_OPTION classless_route,
   DHCP_Subnet_Selection_OPTION subnet_selection,
+  DHCP_6rd_OPTION six_rd,
 
   DHCP_GENERAL_OPTION general
 }
 
-type record of DHCP_OPTION DHCP_OPTIONS;
+type set of DHCP_OPTION DHCP_OPTIONS;
 
 type union DHCP_SNAME {
   DHCP_SNAME_STRING sname,
