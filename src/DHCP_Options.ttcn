@@ -127,7 +127,8 @@ type enumerated DHCP_Option_Type {
   DHCP_Rebinding_Time_Value_OPTION_TYPE (59),                     //9.12
   DHCP_Relay_Agent_Information_OPTION_TYPE(82),                   //RFC3046
   DHCP_Classless_Route_OPTION_TYPE(121),                          //RFC3442
-  DHCP_Subnet_Selection_OPTION_TYPE(118)                          //RFC3011
+  DHCP_Subnet_Selection_OPTION_TYPE(118),                         //RFC3011
+  DHCP_6rd_OPTION_TYPE(212)                                       //RFC5969
 } with {
   variant "FIELDLENGTH(8)"
 }
@@ -1036,5 +1037,21 @@ type record DHCP_Classless_Route_OPTION {
   variant (len) "LENGTHTO(val)"
   variant "PRESENCE (code = DHCP_Classless_Route_OPTION_TYPE)"
 };
+
+type record length (1..infinity) of OCT4 DHCP_6rd_BR_IPv4_Address_List;
+
+type record DHCP_6rd_OPTION {
+  DHCP_Option_Type              code (DHCP_6rd_OPTION_TYPE),
+  LIN1                          len,
+  integer                       ipv4_mask_len (0..32),
+  LIN1                          prefix_len,
+  OCT16                         prefix,
+  DHCP_6rd_BR_IPv4_Address_List val
+} with {
+  variant (len) "LENGTHTO(ipv4_mask_len,prefix_len,prefix,val)"
+  variant "PRESENCE (code = DHCP_6rd_OPTION_TYPE)"
+  variant (ipv4_mask_len) "FIELDLENGTH(8)"
+};
+
 
 }with{ encode "RAW"}  // end of file
