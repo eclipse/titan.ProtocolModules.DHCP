@@ -1,0 +1,132 @@
+---
+Author: Endre Kulcsár
+Version: 198 17-CNL 113 461, Rev. A
+Date: 2012-06-14
+
+---
+= DHCP Protocol Modules for TTCN-3 Toolset with TITAN, User Guide
+:author: Endre Kulcsár
+:revnumber: 198 17-CNL 113 461, Rev. A
+:revdate: 2012-06-14
+:toc:
+
+== About This Document
+
+=== How to Read This Document
+
+This is the User Guide for the DHCP protocol module. The DHCP protocol module is developed for the TTCN-3 Toolset with TITAN. This document should be read together with Function Specification <<_4, [4]>>.
+
+=== Presumed Knowledge
+
+To use this protocol module the knowledge of the TTCN-3 language ‎<<_1, [1]>> is essential.
+
+The DHCP protocol is specified in the RFC-s ‎2131 (<<_5, [5]>>), 2132 (<<_6, ‎[6])>>, 3046 (<<_7, ‎[7]>>), ‎3442 (<<_8, [8]>>) and 3011 (<<_10, [10]>>).
+
+== System Requirements
+
+Protocol modules are a set of TTCN-3 source code files that can be used as part of TTCN-3 test suites only. Hence, protocol modules alone do not put specific requirements on the system used. However, in order to compile and execute a TTCN-3 test suite using the set of protocol modules the following system requirements must be satisfied:
+
+* TITAN TTCN-3 Test Executor version R7A (1.7.pl0) or higher installed. For installation guide see <<_2, ‎[2]>>.
+
+NOTE: This version of the protocol module is not compatible with TITAN releases earlier than R7A.
+
+= Protocol Modules
+
+== Overview
+
+Protocol modules implement the message structures of the related protocol in a formalized way, using the standard specification language TTCN-3. This allows defining of test data (templates) in the TTCN-3 language <<_1, ‎[1]>> and correctly encoding/decoding messages when executing test suites using the Titan TTCN-3 test environment.
+
+Protocol modules are using Titan’s RAW encoding attributes ‎<<_3, [3]>> and hence are usable with the Titan TTCN-3 toolset only.
+
+The DHCP protocol module is defined in two TTCN-3 modules:
+
+* __DHCP_Types.ttcn__ - defines the data structures given in ‎<<_5, [5]>>
+* __DHCP_Options.ttcn__ - implements <<_6, ‎[6]>>, <<_7, ‎[7]>>, <<_8, ‎[8]>>, <<_10, [10]>>.
+
+The file __DHCP_EncDec.cc__ implements the TTCN-3 external functions that can be used to encode/decode DHCP messages. Decoding of Option 82 is possible in different formats (See Appendix in <<_9, ‎[9]>>), therefore extra decoding function `dec_PDU_DHCP_Opt82` is available, which decodes Option 82 according to its input parameter.
+
+NOTE: The `DHCP_Option_Overload_OPTION` is not supported by the Enc/Dec functions. The `sname` and `file` fields are decoded as charstrings with the null characters removed from their end.
+
+When erroneous PDU is received, the message is decoded as follows:
+
+* If the decoder cannot decode one of the DHCP options the erroneous option will be decoded as a `DHCP_General_OPTION`
+* If the data cannot be decoded it is put into the `erroneousPDU` field in PDU_DHCP as an octetstring.
+
+NOTE: The DHCP protocol module uses the types defined in the `General_Types` module (Available in Common Protocol Module CNL 113 368).
+
+== Installation
+
+The set of protocol modules can be used in developing TTCN-3 test suites using any text editor. However, to make the work more efficient a TTCN-3-enabled text editor is recommended (e.g.`nedit`, `xemacs`). Since the DHCP protocol is used as a part of a TTCN-3 test suite, this requires TTCN-3 Test Executor be installed before the module can be compiled and executed together with other parts of the test suite. For more details on the installation of TTCN-3 Test Executor see the relevant section of <<_2, ‎[2]>>.
+
+== Configuration
+
+None.
+
+= Example
+
+The "demo" directory of the deliverable contains the files that show a simple example how to use the Enc/Dec functions to encode/decode a DHCP message.
+
+To run the test case, follow these steps:
+
+1. Load the project definition file into the TITAN GUI
+2. Create the symbolic links
+3. Generate the _Makefile_
+4. Compile the executable
+5. Execute the test case(s)
+
+= Terminology
+
+No specific terminology is used.
+
+= Abbreviations
+
+DHCP:: Dynamic Host Configuration Protocol
+
+ES:: ETSI Standard
+
+ETSI:: European Telecommunications Standards Institute
+
+GUI:: Graphical User Interface
+
+RFC:: Request for Comments
+
+TTCN-3:: Testing and Test Control Notation version 3
+
+= References
+
+[[_1]]
+[1] ETSI ES 201 873-1 v.2.2.1 (02/2003) +
+The Testing and Test Control Notation version 3. Part 1: Core Language
+
+[[_2]]
+[2] Installation Guide for the TITAN TTCN-3 Test Executor
+
+[[_3]]
+[3] Programmer’s Technical Reference for the TITAN TTCN-3 Test Executor
+
+[[_4]]
+[4] DHCP Protocol Modules for TTCN-3 Toolset with TITAN, Function Specification
+
+[[_5]]
+[5] RFC 2131 +
+Dynamic Host Configuration Protocol
+
+[[_6]]
+[6] RFC 2132 +
+DHCP Options and BOOTP Vendor Extensions
+
+[[_7]]
+[7] RFC 3046 +
+DHCP Relay Agent Information Option
+
+[[_8]]
+[8] RFC 3442 +
+The Classless Static Route Option for Dynamic Host Configuration Protocol (DHCP) version 4
+
+[[_9]]
+[9] Interface Description - MASG – DHCP
+
+[[_10]]
+[10] RFC 3011 +
+The IPv4 Subnet Selection Optionfor DHCP
+

@@ -1,0 +1,210 @@
+---
+Author: Endre Kulcsár
+Version: 155 17-CNL 113 461, Rev. A
+Date: 2012-06-14
+
+---
+= DHCP Protocol Modules for TTCN-3 Toolset with TITAN, Function Specification
+:author: Endre Kulcsár
+:revnumber: 155 17-CNL 113 461, Rev. A
+:revdate: 2012-06-14
+:toc:
+
+== How to Read This Document
+
+This is the Function Specification for the set of DHCP protocol modules. DHCP protocol modules are developed for the TTCN-3 Toolset with TITAN.
+
+== Scope
+
+The purpose of this document is to specify the content of the DHCP protocol modules.
+
+= General
+
+Protocol modules implement the message structures of the related protocol in a formalized way, using the standard specification language TTCN-3. This allows defining of test data (templates) in the TTCN-3 language <<_3, ‎[3]>> and correctly encoding/decoding messages when executing test suites using the TITAN TTCN-3 test environment.
+
+Protocol modules are using TITAN’s RAW encoding attributes ‎<<_4, [4]>> and hence are usable with the TITAN test toolset only.
+
+= Functional Specification
+
+== Protocol Version Implemented
+
+This set of protocol modules implements protocol messages and constants of the DHCP protocol, (see <<_1, ‎[1]>>, <<_2, ‎[2]>>, <<_5, ‎[5]>>, ‎<<_6, [6]>> and <<_7, [7]>>) with the modifications specified in ‎<<modifications-deviations-related-to-the-protocol-specification, Modifications/Deviations Related to the Protocol Specification>>5
+
+[[modifications-deviations-related-to-the-protocol-specification]]
+== Modifications/Deviations Related to the Protocol Specification
+
+=== Implemented Messages
+
+The following messages are implemented from ‎<<_1, [1]>>:
+
+* `BOOTREQUEST`
+
+* `BOOTREPLY`
+
+The following options are implemented from ‎<<_2, [2]>>:
+
+* `DHCP_PADDING_OPTION`
+* `DHCP_END_OPTION`
+* `DHCP_Message_Type_OPTION`
+* `DHCP_Client_Identifier_OPTION`
+* `DHCP_Requested_IP_Address_OPTION`
+* `DHCP_Host_Name_OPTION`
+* `DHCP_Vendor_class_identifier_OPTION`
+* `DHCP_Parameter_request_list_OPTION`
+* `DHCP_User_Class_Information_OPTION`
+* `DHCP_Server_Identifier_OPTION`
+* `DHCP_IP_Address_Lease_Time_OPTION`
+* `DHCP_Subnet_Mask_OPTION`
+* `DHCP_Domain_Name_OPTION`
+* `DHCP_Router_OPTION`
+* `DHCP_Domain_Name_Server_OPTION`
+* `DHCP_NetBIOS_over_TCP_IP_Name_Server_OPTION`
+* `DHCP_NetBIOS_over_TCP_IP_Node_Type_OPTION`
+* `DHCP_NetBIOS_over_TCP_IP_Scope_OPTION`
+* `DHCP_Perform_Router_Discovery_OPTION`
+* `DHCP_Static_Route_OPTION`
+* `DHCP_Vendor_Specific_Information_OPTION`
+* `DHCP_Maximum_DHCP_Message_Size_OPTION`
+* `DHCP_Time_Offset_OPTION`
+* `DHCP_Time_Server_OPTION`
+* `DHCP_Name_Server_OPTION`
+* `DHCP_Log_Server_OPTION`
+* `DHCP_Cookie_Server_OPTION`
+* `DHCP_LPR_Server_OPTION`
+* `DHCP_Impress_Server_OPTION`
+* `DHCP_Resource_Location_Server_OPTION`
+* `DHCP_Boot_File_Size_OPTION`
+* `DHCP_Merit_Dump_File_OPTION`
+* `DHCP_Swap_Server_OPTION`
+* `DHCP_Root_Path_OPTION`
+* `DHCP_Extension_Path_OPTION`
+* `DHCP_IP_Forwarding_Enable_Disable_OPTION`
+* `DHCP_Non_Local_Source_Routing_Enable_Disable_OPTION`
+* `DHCP_Policy_Filter_OPTION`
+* `DHCP_Maximum_Datagram_Reassembly_Size_OPTION`
+* `DHCP_Default_IP_Time_To_Live_OPTION`
+* `DHCP_Path_MTU_Aging_Timeout_OPTION`
+* `DHCP_Path_MTU_Plateau_Table_OPTION`
+* `DHCP_Interface_MTU_OPTION`
+* `DHCP_All_Subnets_Are_Local_OPTION`
+* `DHCP_Broadcast_Address_OPTION`
+* `DHCP_Perform_Mask_Discovery_OPTION`
+* `DHCP_Mask_Supplier_OPTION`
+* `DHCP_Router_Solicitation_Address_OPTION`
+* `DHCP_Trailer_Encapsulation_OPTION`
+* `DHCP_ARP_Cache_Timeout_OPTION`
+* `DHCP_Ethernet_Encapsulation_OPTION`
+* `DHCP_TCP_Default_TTL_OPTION`
+* `DHCP_TCP_Keepalive_Interval_OPTION`
+* `DHCP_TCP_Keepalive_Garbage_OPTION`
+* `DHCP_Network_Information_Service_Domain_OPTION`
+* `DHCP_Network_Information_Servers_OPTION`
+* `DHCP_Network_Time_Protocol_Servers_OPTION`
+* `DHCP_NetBIOS_Over_TCP_IP_Datagram_Distribution_OPTION`
+* `DHCP_X_Window_System_Font_Server_OPTION`
+* `DHCP_X_Window_System_Display_Manager_OPTION`
+* `DHCP_Network_Information_Service_and_Domain_OPTION`
+* `DHCP_Network_Information_Service_and_Servers_OPTION`
+* `DHCP_Mobile_IP_Home_Agent_OPTION`
+* `DHCP_Simple_Mail_Transport_Protocol_OPTION`
+* `DHCP_Post_Office_Protocol_OPTION`
+* `DHCP_Network_News_Transport_Protocol_OPTION`
+* `DHCP_Default_World_Wide_Web_OPTION`
+* `DHCP_Default_Finger_Service_OPTION`
+* `DHCP_Default_Internet_Relay_Chat_OPTION`
+* `DHCP_Street_Talk_Server_OPTION`
+* `DHCP_Street_Talk_Directory_Assistance_Server_OPTION`
+* `DHCP_Option_Overload_OPTION`
+* `DHCP_TFTP_Server_Name_OPTION`
+* `DHCP_Bootfile_Name_OPTION`
+* `DHCP_Message_OPTION`
+* `DHCP_Renewal_Time_Value_OPTION`
+* `DHCP_Rebinding_Time_Value_OPTION`
+
+The following option is implemented from <<_5, ‎[5]>>:
+
+* `DHCP_Relay_Agent_Information_OPTION`
+
+The following option is implemented from <<_6, ‎[6]>>:
+
+* `DHCP_Classless_Route_OPTION`
+
+The following option is implemented from <<_7, [7]>>:
+
+* `DHCP_Subnet_Selection_OPTION`
+
+[[protocol-modifications-deviations]]
+=== Protocol Modifications/Deviations
+
+Protocol modules contain the following additions:
+
+`DHCP_GENERAL_OPTION` : +
+This implements the general `TLV` format of the `DHCP` option
+
+The `DHCP_OPTION_OVERLOAD_OPTION` is not supported. Although this option is decoded correctly, the Enc/Dec functions do not interpret it, i.e. `sname` and `file` fields are decoded as charstrings.
+
+[[encoding-decoding-and-other-related-functions]]
+== Encoding/Decoding and Other Related Functions
+
+This product also contains encoding/decoding functions that assure correct encoding of messages when sent from TITAN and correct decoding of messages when received by TITAN. Implemented encoding/decoding functions:
+
+[cols=3*,options=header]
+|===
+
+|Name
+|Type of formal parameters
+|Type of return value
+
+|`enc_PDU_DHCP`
+|PDU_DHCP
+|octetstring
+
+|`dec_PDU_DHCP`
+|octetstring
+|PDU_DHCP
+
+|`dec_PDU_DHCP_Opt82`
+|octetstring, DHCP_Option82_Format
+|PDU_DHCP
+|===
+
+= Terminology
+
+No specific terminology is used.
+
+= Abbreviations
+
+DHCP:: Dynamic Host Configuration Protocol
+
+TLV:: Type, Length, Value
+
+TTCN-3:: Testing and Test Control Notation version 3
+
+= References
+
+[[_1]]
+[1] RFC 2131 +
+Dynamic Host Configuration Protocol
+
+[[_2]]
+[2] RFC 2132 +
+DHCP Options and BOOTP Vendor Extensions
+
+[[_3]]
+[3] ETSI ES 201 873-1 v.2.2.1 (02/2003) +
+The Testing and Test Control Notation version 3. Part 1: Core Language
+
+[[_4]]
+[4] Programmer’s Technical Reference for the TITAN TTCN-3 Test Executor
+
+[[_5]]
+[5] RFC 3046 +
+DHCP Relay Agent Information Option
+
+[[_6]]
+[6] RFC 3442 +
+The Classless Static Route Option for Dynamic Host Configuration Protocol (DHCP) version 4
+
+[[_7]]
+[7] RFC 3011 +
+The IPv4 Subnet Selection Optionfor DHCP
