@@ -128,6 +128,7 @@ type enumerated DHCP_Option_Type {
   DHCP_Relay_Agent_Information_OPTION_TYPE(82),                   //RFC3046
   DHCP_Classless_Route_OPTION_TYPE(121),                          //RFC3442
   DHCP_Subnet_Selection_OPTION_TYPE(118),                         //RFC3011
+  DHCP_Domain_Search_OPTION_TYPE (119),                           //RFC3397
   DHCP_6rd_OPTION_TYPE(212)                                       //RFC5969
 } with {
   variant "FIELDLENGTH(8)"
@@ -1036,6 +1037,15 @@ type record DHCP_Classless_Route_OPTION {
 } with {
   variant (len) "LENGTHTO(val)"
   variant "PRESENCE (code = DHCP_Classless_Route_OPTION_TYPE)"
+};
+
+type record DHCP_Domain_Search_OPTION {
+  DHCP_Option_Type code (DHCP_Domain_Search_OPTION_TYPE),
+  LIN1 len,
+  charstring val length (1..255)
+} with {
+  variant (len) "LENGTHTO(val)"
+  variant "PRESENCE (code = DHCP_Domain_Search_OPTION_TYPE)"
 };
 
 type record length (1..infinity) of OCT4 DHCP_6rd_BR_IPv4_Address_List;
